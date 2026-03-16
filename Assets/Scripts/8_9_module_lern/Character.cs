@@ -3,12 +3,18 @@ using UnityEngine;
 
 public class Character : MonoBehaviour, IJumper
 {
-    public event Action Jumped;
+    public event Action Jumped
+    {
+        add => _jumper.Jumped += value;
+        remove => _jumper.Jumped -= value;
+    }
 
     private int _points;
-    private Rigidbody _rigidbody;
 
-    [SerializeField] private Vector3 _jumpForce;
+
+    private PhysicsJumper _jumper;
+
+    [SerializeField] private float _jumpForce;
     [SerializeField] private int _moveForce;
     [SerializeField] private int _rateChangeMoveForce;
 
@@ -24,7 +30,7 @@ public class Character : MonoBehaviour, IJumper
 
     private void Awake()
     {
-        _rigidbody = GetComponent<Rigidbody>();
+        _jumper = new PhysicsJumper(_jumpForce, GetComponent<Rigidbody>());
         UpdateMoveVector();
     }
 
@@ -33,26 +39,28 @@ public class Character : MonoBehaviour, IJumper
         ProcessMovement();
     }
 
+    private void FixedUpdate()
+    {
+        _jumper.FixedUpdate();
+    }
+
     private void ProcessMovement()
     {
         if (CheckKeyJump())
         {
-            _rigidbody.AddForce(_jumpForce, ForceMode.Impulse);
-            Jumped?.Invoke();
+            _jumper.Jump(Vector3.up);
 
             AddPoints(_pointsPerVerticalJump);
         }
         else if (CheckKeyMoveLeft())
         {
-            Jumped?.Invoke();
-            _rigidbody.AddForce(_leftMoveForce, ForceMode.Impulse);
+            _jumper.Jump(_leftMoveForce);
             AddPoints(_pointsPerHorizontalJump);
             UpdateMoveVector();
         }
         else if (CheckKeyMoveRight())
         {
-            Jumped?.Invoke();
-            _rigidbody.AddForce(_rightMoveForce, ForceMode.Impulse);
+            _jumper.Jump(_rightMoveForce);
             AddPoints(_pointsPerHorizontalJump);
             UpdateMoveVector();
         }

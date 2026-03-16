@@ -8418,7 +8418,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 223c94f1bdf0e8c46a095f3a888327a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _jumpForce: {x: 0, y: 10, z: 0}
+  _jumpForce: 10
   _moveForce: 20
   _rateChangeMoveForce: 4
   _pointsPerVerticalJump: 1
@@ -20040,7 +20040,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2cc96d202a8fd34d8d32b065c94bbc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _jumper: {fileID: 510237445}
   _animator: {fileID: 2026701905}
 --- !u!114 &2026701907
 MonoBehaviour:
@@ -20054,7 +20053,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 142ab1cd57e898d469d8fae6609ce921, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _jumper: {fileID: 510237445}
   _additiveScalePerJump: 0.5
   _maxScaleLimit: 1.5
   _speedScale: 1.5
