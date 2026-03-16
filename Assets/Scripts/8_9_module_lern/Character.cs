@@ -1,9 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-public class Charter : MonoBehaviour
+public class Character : MonoBehaviour, IJumper
 {
+    public event Action Jumped;
+
     private int _points;
     private Rigidbody _rigidbody;
 
@@ -19,34 +20,16 @@ public class Charter : MonoBehaviour
 
     public int Points => _points;
 
-    [SerializeField] private float _additiveScalePerJump;
-    [SerializeField] private float _maxScaleLimit;
-    [SerializeField] private float _speedScale;
-    private Vector3 _defaultScale;
-    private Vector3 _targetScale;
-
     [SerializeField] private ParticleSystem _explosion;
-
-    private string _jumpKey = "Jump";
-    [SerializeField] private Animator _animator;
-
-    private Vector3 MaxScale 
-        => new Vector3(
-            _defaultScale.x * _maxScaleLimit, 
-            _defaultScale.y * _maxScaleLimit, 
-            _defaultScale.z * _maxScaleLimit
-            );
 
     private void Awake()
     {
-        _defaultScale = _targetScale = transform.localScale;
         _rigidbody = GetComponent<Rigidbody>();
         UpdateMoveVector();
     }
 
     private void Update()
     {
-        UpdateScale();
         ProcessMovement();
     }
 
@@ -54,26 +37,24 @@ public class Charter : MonoBehaviour
     {
         if (CheckKeyJump())
         {
-            _animator.SetTrigger(_jumpKey);
             _rigidbody.AddForce(_jumpForce, ForceMode.Impulse);
+            Jumped?.Invoke();
+
             AddPoints(_pointsPerVerticalJump);
-            IncreaseTargetScale();
         }
         else if (CheckKeyMoveLeft())
         {
-            _animator.SetTrigger(_jumpKey);
+            Jumped?.Invoke();
             _rigidbody.AddForce(_leftMoveForce, ForceMode.Impulse);
             AddPoints(_pointsPerHorizontalJump);
             UpdateMoveVector();
-            IncreaseTargetScale();
         }
         else if (CheckKeyMoveRight())
         {
-            _animator.SetTrigger(_jumpKey);
+            Jumped?.Invoke();
             _rigidbody.AddForce(_rightMoveForce, ForceMode.Impulse);
             AddPoints(_pointsPerHorizontalJump);
             UpdateMoveVector();
-            IncreaseTargetScale();
         }
     }
 
@@ -114,38 +95,6 @@ public class Charter : MonoBehaviour
 
     public void ResetPoints()
         => _points = 0;
-
-    private void IncreaseTargetScale()
-    {
-        _targetScale = new Vector3(
-            _targetScale.x += _additiveScalePerJump,
-            _targetScale.y += _additiveScalePerJump,
-            _targetScale.z += _additiveScalePerJump
-            );
-
-        if (_targetScale.x > MaxScale.x)
-            _targetScale.x = MaxScale.x;
-
-        if (_targetScale.y > MaxScale.y)
-            _targetScale.y = MaxScale.y;
-
-        if (_targetScale.z > MaxScale.z)
-            _targetScale.z = MaxScale.z;
-    }
-
-    private void UpdateScale()
-    {
-        if (_targetScale.x > _defaultScale.x)
-            _targetScale.x -= Time.deltaTime * _speedScale;
-
-        if (_targetScale.y > _defaultScale.y)
-            _targetScale.y -= Time.deltaTime * _speedScale;
-
-        if (_targetScale.z > _defaultScale.z)
-            _targetScale.z -= Time.deltaTime * _speedScale;
-
-        transform.localScale = _targetScale;
-    }
 
     public void Die()
     {

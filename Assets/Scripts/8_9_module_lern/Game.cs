@@ -8,7 +8,7 @@ public class Game : MonoBehaviour
     private string _looseMessage = "Вы проиграли! :(";
     private string _winMessage = "Вы победили! :)";
 
-    [SerializeField] private Charter _charter;
+    [SerializeField] private Character _charter;
 
     [SerializeField] private Transform _upperBoundary;
     [SerializeField] private Transform _lowerBoundary;
