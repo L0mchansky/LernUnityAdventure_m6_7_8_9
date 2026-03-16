@@ -1,8 +1,9 @@
 using System;
 using UnityEngine;
 
-public class Character : MonoBehaviour, IJumper
+public class Character : MonoBehaviour, IJumper, IDiedNotifier
 {
+    public event Action Died;
     public event Action Jumped
     {
         add => _jumper.Jumped += value;
@@ -10,7 +11,6 @@ public class Character : MonoBehaviour, IJumper
     }
 
     private int _points;
-
 
     private PhysicsJumper _jumper;
 
@@ -25,8 +25,6 @@ public class Character : MonoBehaviour, IJumper
     [SerializeField] private int _pointsPerHorizontalJump = 3;
 
     public int Points => _points;
-
-    [SerializeField] private ParticleSystem _explosion;
 
     private void Awake()
     {
@@ -107,7 +105,6 @@ public class Character : MonoBehaviour, IJumper
     public void Die()
     {
         gameObject.SetActive(false); // выключаем объект птички
-        _explosion.transform.position = transform.position;
-        _explosion.Play();
+        Died?.Invoke();
     }
 }
